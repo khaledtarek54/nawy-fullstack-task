@@ -21,7 +21,7 @@ services:
       context: ./command-relay
     container_name: mars-command-relay
     ports:
-      - "3000:7010"
+      - "7010:7010"
     environment:
       MISSION_CODE: MARS-EXPANSION-2042
       POSTGRES_USER: mars
