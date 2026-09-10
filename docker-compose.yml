@@ -1,0 +1,69 @@
+name: nawy-mars-command
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mars-postgres
+    environment:
+      POSTGRES_USER: mars
+      POSTGRES_PASSWORD: mars-classified-7f3a2
+      POSTGRES_DB: habitats
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mars -d habitats"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  command-relay:
+    build:
+      context: ./command-relay
+    container_name: mars-command-relay
+    ports:
+      - "3000:7010"
+    environment:
+      MISSION_CODE: MARS-EXPANSION-2042
+      POSTGRES_USER: mars
+      POSTGRES_PASSWORD: mars-classified-7f3a2
+      POSTGRES_DB: habitats
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      PORT: 7010
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:7010/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+    container_name: mars-backend
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: mars-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:4000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
