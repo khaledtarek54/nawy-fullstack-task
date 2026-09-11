@@ -12,12 +12,10 @@ export class HabitatsService {
     const skip = (page - 1) * limit;
     const habitats = await this.repo.findAll(skip, limit);
 
-    const enriched: EnrichedHabitat[] = [];
-    for (const h of habitats) {
-      const amenities = await this.repo.findAmenitiesForHabitat(h.id);
-      enriched.push({ ...h, amenityNames: amenities.map((a) => a.name) });
-    }
-    return enriched;
+    return habitats.map((h) => ({
+      ...h,
+      amenityNames: h.amenities.map((a) => a.name),
+    }));
   }
 
   async getById(id: string): Promise<EnrichedHabitat> {

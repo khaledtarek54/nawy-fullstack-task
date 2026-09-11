@@ -15,6 +15,8 @@ export class HabitatsRepository {
 
   async findAll(skip: number, take: number): Promise<Habitat[]> {
     return this.habitats.find({
+      relations: { amenities: true },
+      relationLoadStrategy: 'query',
       order: { listedAt: 'DESC' },
       skip,
       take,
