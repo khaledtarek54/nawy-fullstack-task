@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Amenity } from './amenity.entity';
+import { HabitatStatus } from '../habitat-status';
 
 @Entity({ name: 'habitats' })
 export class Habitat {
@@ -34,10 +35,7 @@ export class Habitat {
   description!: string;
 
   @Column({ type: 'text' })
-  status!: string;
-
-  @Column({ type: 'text', nullable: true, name: 'status_normalized' })
-  statusNormalized!: string | null;
+  status!: HabitatStatus;
 
   @Column({ type: 'numeric', nullable: true, name: 'o2_pct' })
   o2Pct!: string | null;

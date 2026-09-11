@@ -3,6 +3,7 @@ import { DataSource } from 'typeorm';
 import { Habitat } from '../src/habitats/entities/habitat.entity';
 import { Amenity } from '../src/habitats/entities/amenity.entity';
 import { HABITATS_SEED } from './habitats.seed';
+import { normalizeHabitatStatus } from '../src/habitats/habitat-status';
 
 async function main() {
   const dataSource = new DataSource({
@@ -45,7 +46,7 @@ async function main() {
           [
             seed.id, seed.title, seed.price_egp, seed.currency, seed.address_line,
             seed.bedrooms, seed.bathrooms, seed.area_m2, seed.image_url,
-            seed.description, seed.status,
+            seed.description, normalizeHabitatStatus(seed.status),
             seed.o2_pct, seed.pressure_kpa, seed.temperature_c,
             seed.radiation_shielding_pct, seed.power_reserve_hours,
             seed.co2_scrubber_state, seed.listed_at,
