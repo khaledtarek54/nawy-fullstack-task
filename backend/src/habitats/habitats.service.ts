@@ -9,7 +9,7 @@ export class HabitatsService {
   constructor(private readonly repo: HabitatsRepository) {}
 
   async list(page: number, limit: number): Promise<EnrichedHabitat[]> {
-    const skip = page * limit;
+    const skip = (page - 1) * limit;
     const habitats = await this.repo.findAll(skip, limit);
 
     const enriched: EnrichedHabitat[] = [];
