@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { Habitat } from './entities/habitat.entity';
 import { Amenity } from './entities/amenity.entity';
 
@@ -27,12 +27,14 @@ export class HabitatsRepository {
     return this.habitats.findOne({ where: { id } });
   }
 
-  async findRecent(since: Date): Promise<Habitat[]> {
-    return this.habitats
-      .createQueryBuilder('h')
-      .where('h.listed_at >= :since', { since })
-      .orderBy('h.listed_at', 'DESC')
-      .getMany();
+  async findRecent(since: Date, take: number): Promise<Habitat[]> {
+    return this.habitats.find({
+      relations: { amenities: true },
+      relationLoadStrategy: 'query',
+      where: { listedAt: MoreThanOrEqual(since) },
+      order: { listedAt: 'DESC' },
+      take,
+    });
   }
 
   async findAmenitiesForHabitat(habitatId: string): Promise<Amenity[]> {

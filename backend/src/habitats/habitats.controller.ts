@@ -16,9 +16,7 @@ export class HabitatsController {
   @Get('recent')
   async recent(): Promise<HabitatResponseDto[]> {
     const rows = await this.service.listRecent();
-    return rows.map((row) =>
-      this.toResponse({ ...row, amenityNames: [] }),
-    );
+    return rows.map((row) => this.toResponse(row));
   }
 
   @Get(':id')
