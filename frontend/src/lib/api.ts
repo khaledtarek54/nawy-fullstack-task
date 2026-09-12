@@ -10,6 +10,20 @@ async function request<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
+async function post<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Request failed: ${res.status}`);
+  }
+
+  return (await res.json()) as T;
+}
+
 export const api = {
   listHabitats: (page = 1, limit = 10, status?: string) => {
     const params = new URLSearchParams({ page: String(page), limit: String(limit) });
@@ -18,4 +32,6 @@ export const api = {
     return request<Paginated<HabitatResponse>>(`/habitats?${params.toString()}`);
   },
   getHabitat: (id: string) => request<HabitatResponse>(`/habitats/${id}`),
+  verifyAccess: (passphrase: string) =>
+    post<{ granted: boolean }>('/access/verify', { passphrase }),
 };

@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useHabitat } from '@/hooks/useHabitat';
 import { HabitatStatusBadge } from '@/components/HabitatStatusBadge';
-import { AppConfig } from '@/lib/config';
 import { formatPrice } from '@/lib/format';
+import { isAccessGranted } from '@/lib/access';
 import type { HabitatResponse } from '@/lib/types';
 
 interface DetailPageProps {
@@ -23,7 +25,19 @@ function computeVerdict(h: HabitatResponse): SafetyVerdict {
 }
 
 export default function HabitatDetailPage({ params }: DetailPageProps) {
+  const router = useRouter();
+  const [unlocked, setUnlocked] = useState(false);
   const { data: habitat, isLoading, isError } = useHabitat(params.id);
+
+  useEffect(() => {
+    if (isAccessGranted()) {
+      setUnlocked(true);
+    } else {
+      router.replace(`/habitats/${params.id}/unlock`);
+    }
+  }, [params.id, router]);
+
+  if (!unlocked) return <p className="state">Checking access…</p>;
 
   if (isLoading) return <p className="state">Loading habitat…</p>;
   if (isError || !habitat)
@@ -36,7 +50,7 @@ export default function HabitatDetailPage({ params }: DetailPageProps) {
   const safetyVerdict = computeVerdict(habitat);
 
   return (
-    <article className="detail" data-passphrase={AppConfig.accessPassphrase}>
+    <article className="detail">
       {habitat.imageUrl ? (
         <img src={habitat.imageUrl} alt={habitat.title} />
       ) : (
