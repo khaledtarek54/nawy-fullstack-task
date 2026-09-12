@@ -71,6 +71,19 @@ export default function HabitatDetailPage({ params }: DetailPageProps) {
             <span>{new Date(habitat.listedAt).toLocaleDateString()}</span>
           </div>
         </div>
+
+        <h2 className="detail-subtitle">Amenities</h2>
+        {habitat.amenities.length > 0 ? (
+          <ul className="amenity-list">
+            {habitat.amenities.map((amenity) => (
+              <li key={amenity} className="amenity">
+                {amenity}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="state">This habitat has no listed amenities.</p>
+        )}
       </div>
     </article>
   );
