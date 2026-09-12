@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Habitat } from './entities/habitat.entity';
 import { HabitatsRepository } from './habitats.repository';
+import { HabitatStatus } from './habitat-status';
 
 export type EnrichedHabitat = Habitat & { amenityNames: string[] };
 
@@ -14,9 +15,10 @@ export class HabitatsService {
   async list(
     page: number,
     limit: number,
+    status?: HabitatStatus,
   ): Promise<{ habitats: EnrichedHabitat[]; total: number }> {
     const skip = (page - 1) * limit;
-    const [habitats, total] = await this.repo.findAll(skip, limit);
+    const [habitats, total] = await this.repo.findAll(skip, limit, status);
 
     return { habitats: this.toEnriched(habitats), total };
   }

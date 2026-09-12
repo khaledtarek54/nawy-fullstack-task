@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
 import { Habitat } from './entities/habitat.entity';
+import { HabitatStatus } from './habitat-status';
 import { Amenity } from './entities/amenity.entity';
 
 @Injectable()
@@ -13,10 +14,15 @@ export class HabitatsRepository {
     private readonly amenities: Repository<Amenity>,
   ) {}
 
-  async findAll(skip: number, take: number): Promise<[Habitat[], number]> {
+  async findAll(
+    skip: number,
+    take: number,
+    status?: HabitatStatus,
+  ): Promise<[Habitat[], number]> {
     return this.habitats.findAndCount({
       relations: { amenities: true },
       relationLoadStrategy: 'query',
+      where: status ? { status } : {},
       order: { listedAt: 'DESC' },
       skip,
       take,

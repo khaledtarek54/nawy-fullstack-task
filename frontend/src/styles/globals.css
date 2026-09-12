@@ -181,3 +181,9 @@ h1 {
 .state-error {
   color: var(--orange);
 }
+
+.filter-active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}

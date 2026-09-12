@@ -12,7 +12,11 @@ export class HabitatsController {
   async list(
     @Query() query: ListHabitatsQueryDto,
   ): Promise<PaginatedResponseDto<HabitatResponseDto>> {
-    const { habitats, total } = await this.service.list(query.page, query.limit);
+    const { habitats, total } = await this.service.list(
+      query.page,
+      query.limit,
+      query.status,
+    );
 
     return {
       data: habitats.map((row) => this.toResponse(row)),

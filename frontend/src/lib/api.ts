@@ -11,7 +11,11 @@ async function request<T>(path: string): Promise<T> {
 }
 
 export const api = {
-  listHabitats: (page = 1, limit = 10) =>
-    request<Paginated<HabitatResponse>>(`/habitats?page=${page}&limit=${limit}`),
+  listHabitats: (page = 1, limit = 10, status?: string) => {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    if (status) params.set('status', status);
+
+    return request<Paginated<HabitatResponse>>(`/habitats?${params.toString()}`);
+  },
   getHabitat: (id: string) => request<HabitatResponse>(`/habitats/${id}`),
 };
