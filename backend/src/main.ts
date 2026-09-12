@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { configureApp } from './app-setup';
 
 async function bootstrap() {
   if (!process.env.DATABASE_URL) {
@@ -12,10 +12,7 @@ async function bootstrap() {
   }
 
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
-  app.useGlobalPipes(
-    new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: false }),
-  );
+  configureApp(app);
   await app.listen(4000);
   // eslint-disable-next-line no-console
   console.log('[backend] Mars Habitat Service listening on :4000');
