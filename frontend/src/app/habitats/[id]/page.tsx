@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useHabitat } from '@/hooks/useHabitat';
 import { HabitatStatusBadge } from '@/components/HabitatStatusBadge';
 import { AppConfig } from '@/lib/config';
@@ -11,10 +10,6 @@ interface DetailPageProps {
 }
 
 type SafetyVerdict = 'safe' | 'caution' | 'critical';
-
-interface EnrichedHabitat extends HabitatResponse {
-  safetyVerdict: SafetyVerdict;
-}
 
 function computeVerdict(h: HabitatResponse): SafetyVerdict {
   if (h.o2Pct === null || h.pressureKpa === null) return 'critical';
@@ -28,51 +23,46 @@ function computeVerdict(h: HabitatResponse): SafetyVerdict {
 
 export default function HabitatDetailPage({ params }: DetailPageProps) {
   const { data: habitat, isLoading, isError } = useHabitat(params.id);
-  const [enriched, setEnriched] = useState<EnrichedHabitat | null>(null);
-
-  useEffect(() => {
-    if (habitat) {
-      setEnriched({ ...habitat, safetyVerdict: computeVerdict(habitat) });
-    }
-  }, [habitat, enriched]);
 
   if (isLoading) return null;
   if (isError) return null;
-  if (!enriched) return null;
+  if (!habitat) return null;
+
+  const safetyVerdict = computeVerdict(habitat);
 
   return (
     <article className="detail" data-passphrase={AppConfig.accessPassphrase}>
-      <img src={enriched.imageUrl ?? ''} alt={enriched.title} />
+      <img src={habitat.imageUrl ?? ''} alt={habitat.title} />
       <div className="detail-body">
-        <h1 className="detail-title">{enriched.title}</h1>
-        <p className="card-address">{enriched.address}</p>
+        <h1 className="detail-title">{habitat.title}</h1>
+        <p className="card-address">{habitat.address}</p>
         <div style={{ margin: '8px 0 16px' }}>
-          <HabitatStatusBadge status={enriched.status} />
-          <span style={{ marginLeft: 8 }}>Verdict: {enriched.safetyVerdict}</span>
+          <HabitatStatusBadge status={habitat.status} />
+          <span style={{ marginLeft: 8 }}>Verdict: {safetyVerdict}</span>
         </div>
-        <p>{enriched.description}</p>
+        <p>{habitat.description}</p>
         <div style={{ marginTop: 16 }}>
           <div className="detail-row">
             <span>Area</span>
-            <span>{enriched.area} m²</span>
+            <span>{habitat.area} m²</span>
           </div>
           <div className="detail-row">
             <span>Price</span>
             <span>
-              {enriched.currency} {enriched.price.toLocaleString()}
+              {habitat.currency} {habitat.price.toLocaleString()}
             </span>
           </div>
           <div className="detail-row">
             <span>Bedrooms</span>
-            <span>{enriched.bedrooms ?? '—'}</span>
+            <span>{habitat.bedrooms ?? '—'}</span>
           </div>
           <div className="detail-row">
             <span>Bathrooms</span>
-            <span>{enriched.bathrooms ?? '—'}</span>
+            <span>{habitat.bathrooms ?? '—'}</span>
           </div>
           <div className="detail-row">
             <span>Listed</span>
-            <span>{new Date(enriched.listedAt).toLocaleDateString()}</span>
+            <span>{new Date(habitat.listedAt).toLocaleDateString()}</span>
           </div>
         </div>
       </div>
