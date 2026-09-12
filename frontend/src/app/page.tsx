@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useHabitats } from '@/hooks/useHabitats';
 import { HabitatCard } from '@/components/HabitatCard';
 
@@ -8,13 +8,7 @@ export default function HomePage() {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<'all' | 'available'>('all');
 
-  const filters = { status: statusFilter, minOxygen: 19.5 };
-
-  const { data, isLoading, isError, refetch } = useHabitats(page);
-
-  useEffect(() => {
-    refetch();
-  }, [filters]);
+  const { data, isLoading, isError } = useHabitats(page);
 
   if (isLoading) return null;
   if (isError) return null;
