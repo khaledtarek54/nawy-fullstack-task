@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Habitat } from './entities/habitat.entity';
 import { HabitatsRepository } from './habitats.repository';
 import { HabitatStatus } from './habitat-status';
+import { SafetyCheck, evaluateSafety } from './habitat-safety';
 
 export type EnrichedHabitat = Habitat & { amenityNames: string[] };
 
@@ -37,6 +38,16 @@ export class HabitatsService {
     const habitats = await this.repo.findRecent(since, RECENT_LIMIT);
 
     return this.toEnriched(habitats);
+  }
+
+  async getSafetyCheck(id: string): Promise<SafetyCheck> {
+    const habitat = await this.repo.findById(id);
+
+    if (!habitat) {
+      throw new NotFoundException(`Habitat ${id} not found`);
+    }
+
+    return evaluateSafety(habitat);
   }
 
   private toEnriched(habitats: Habitat[]): EnrichedHabitat[] {

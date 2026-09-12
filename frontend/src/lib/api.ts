@@ -1,4 +1,4 @@
-import type { HabitatResponse, Paginated } from './types';
+import type { HabitatResponse, Paginated, SafetyCheck } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
 
@@ -32,6 +32,7 @@ export const api = {
     return request<Paginated<HabitatResponse>>(`/habitats?${params.toString()}`);
   },
   getHabitat: (id: string) => request<HabitatResponse>(`/habitats/${id}`),
+  getSafetyCheck: (id: string) => request<SafetyCheck>(`/habitats/${id}/safety-check`),
   verifyAccess: (passphrase: string) =>
     post<{ granted: boolean }>('/access/verify', { passphrase }),
 };

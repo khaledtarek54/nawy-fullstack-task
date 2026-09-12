@@ -134,6 +134,47 @@ describe('Habitats API — Mars-era contract', () => {
     });
   });
 
+  describe('GET /habitats/:id/safety-check', () => {
+    it('breaks the verdict down across every safety metric', async () => {
+      const res = await http().get('/habitats/hab_001/safety-check').expect(200);
+
+      expect(res.body.habitatId).toBe('hab_001');
+      expect(res.body.checks.map((c: { metric: string }) => c.metric)).toEqual([
+        'o2',
+        'pressure',
+        'co2_scrubber',
+        'temperature',
+        'radiation',
+        'power',
+      ]);
+      expect(res.body.checks.every((c: { detail: string }) => c.detail.length > 0)).toBe(true);
+    });
+
+    it('scores a habitat with every metric in range at 100', async () => {
+      const res = await http().get('/habitats/hab_001/safety-check').expect(200);
+
+      expect(res.body.verdict).toBe('safe');
+      expect(res.body.score).toBe(100);
+      expect(res.body.checks.every((c: { status: string }) => c.status === 'safe')).toBe(true);
+    });
+
+    it('treats a failed scrubber as critical however good the rest is', async () => {
+      const res = await http().get('/habitats/hab_008/safety-check').expect(200);
+
+      const scrubber = res.body.checks.find(
+        (c: { metric: string }) => c.metric === 'co2_scrubber',
+      );
+
+      expect(scrubber.status).toBe('critical');
+      expect(res.body.verdict).toBe('critical');
+      expect(res.body.score).toBeGreaterThan(0);
+    });
+
+    it('404s for a habitat that does not exist', async () => {
+      await http().get('/habitats/hab_does_not_exist/safety-check').expect(404);
+    });
+  });
+
   describe('POST /access/verify', () => {
     it('grants access for the configured passphrase', async () => {
       const res = await http()

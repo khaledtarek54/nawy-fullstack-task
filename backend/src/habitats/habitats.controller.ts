@@ -3,6 +3,7 @@ import { HabitatsService, EnrichedHabitat } from './habitats.service';
 import { ListHabitatsQueryDto } from './dto/list-habitats.query.dto';
 import { HabitatResponseDto } from './dto/habitat-response.dto';
 import { PaginatedResponseDto } from './dto/paginated-response.dto';
+import { SafetyCheck } from './habitat-safety';
 
 @Controller('habitats')
 export class HabitatsController {
@@ -33,6 +34,11 @@ export class HabitatsController {
   async recent(): Promise<HabitatResponseDto[]> {
     const rows = await this.service.listRecent();
     return rows.map((row) => this.toResponse(row));
+  }
+
+  @Get(':id/safety-check')
+  async safetyCheck(@Param('id') id: string): Promise<SafetyCheck> {
+    return this.service.getSafetyCheck(id);
   }
 
   @Get(':id')

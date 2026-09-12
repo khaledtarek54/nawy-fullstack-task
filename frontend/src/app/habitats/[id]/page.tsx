@@ -1,41 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useHabitat } from '@/hooks/useHabitat';
+import { useAccessGate } from '@/hooks/useAccessGate';
+import { useSafetyCheck } from '@/hooks/useSafetyCheck';
 import { HabitatStatusBadge } from '@/components/HabitatStatusBadge';
 import { formatPrice } from '@/lib/format';
-import { isAccessGranted } from '@/lib/access';
 import type { HabitatResponse } from '@/lib/types';
 
 interface DetailPageProps {
   params: { id: string };
 }
 
-type SafetyVerdict = 'safe' | 'caution' | 'critical';
-
-function computeVerdict(h: HabitatResponse): SafetyVerdict {
-  if (h.o2Pct === null || h.pressureKpa === null) return 'critical';
-  if (h.o2Pct < 19.5 || h.o2Pct > 23.5) return 'critical';
-  if (h.pressureKpa < 70) return 'critical';
-  if (h.co2ScrubberState === 'Failed') return 'critical';
-  if (h.co2ScrubberState === 'Degraded') return 'caution';
-  if (h.powerReserveHours !== null && h.powerReserveHours < 4) return 'caution';
-  return 'safe';
-}
-
 export default function HabitatDetailPage({ params }: DetailPageProps) {
-  const router = useRouter();
-  const [unlocked, setUnlocked] = useState(false);
+  const unlocked = useAccessGate(params.id);
   const { data: habitat, isLoading, isError } = useHabitat(params.id);
-
-  useEffect(() => {
-    if (isAccessGranted()) {
-      setUnlocked(true);
-    } else {
-      router.replace(`/habitats/${params.id}/unlock`);
-    }
-  }, [params.id, router]);
+  const { data: safety } = useSafetyCheck(params.id);
 
   if (!unlocked) return <p className="state">Checking access…</p>;
 
@@ -46,8 +26,6 @@ export default function HabitatDetailPage({ params }: DetailPageProps) {
         This habitat could not be loaded. It may no longer be listed.
       </p>
     );
-
-  const safetyVerdict = computeVerdict(habitat);
 
   return (
     <article className="detail">
@@ -61,7 +39,11 @@ export default function HabitatDetailPage({ params }: DetailPageProps) {
         <p className="card-address">{habitat.address}</p>
         <div style={{ margin: '8px 0 16px' }}>
           <HabitatStatusBadge status={habitat.status} />
-          <span style={{ marginLeft: 8 }}>Verdict: {safetyVerdict}</span>
+          {safety ? (
+            <Link href={`/habitats/${params.id}/safety`} className={`status safety-${safety.verdict}`} style={{ marginLeft: 8 }}>
+              Safety {safety.score}/100 →
+            </Link>
+          ) : null}
         </div>
         <p>{habitat.description}</p>
         <div style={{ marginTop: 16 }}>

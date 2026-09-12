@@ -31,3 +31,22 @@ export interface Paginated<T> {
   data: T[];
   meta: PaginationMeta;
 }
+
+export type SafetyStatus = 'safe' | 'caution' | 'critical';
+
+export interface SafetyCheckItem {
+  metric: string;
+  label: string;
+  value: number | string | null;
+  unit: string | null;
+  safeRange: string;
+  status: SafetyStatus;
+  detail: string;
+}
+
+export interface SafetyCheck {
+  habitatId: string;
+  verdict: SafetyStatus;
+  score: number;
+  checks: SafetyCheckItem[];
+}
