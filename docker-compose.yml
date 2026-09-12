@@ -21,7 +21,7 @@ services:
       context: ./command-relay
     container_name: mars-command-relay
     ports:
-      - "3000:7010"
+      - "7010:7010"
     environment:
       MISSION_CODE: MARS-EXPANSION-2042
       POSTGRES_USER: mars
@@ -47,10 +47,16 @@ services:
       - "4000:4000"
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      ACCESS_PASSPHRASE: ${ACCESS_PASSPHRASE}
       NODE_ENV: development
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
 
   frontend:
@@ -63,6 +69,11 @@ services:
       NEXT_PUBLIC_API_BASE_URL: http://localhost:4000
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     restart: unless-stopped
 
 volumes:

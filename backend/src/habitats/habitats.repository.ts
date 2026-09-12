@@ -1,20 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThanOrEqual, Repository } from 'typeorm';
 import { Habitat } from './entities/habitat.entity';
-import { Amenity } from './entities/amenity.entity';
+import { HabitatStatus } from './habitat-status';
 
 @Injectable()
 export class HabitatsRepository {
   constructor(
     @InjectRepository(Habitat)
     private readonly habitats: Repository<Habitat>,
-    @InjectRepository(Amenity)
-    private readonly amenities: Repository<Amenity>,
   ) {}
 
-  async findAll(skip: number, take: number): Promise<Habitat[]> {
-    return this.habitats.find({
+  async findAll(
+    skip: number,
+    take: number,
+    status?: HabitatStatus,
+  ): Promise<[Habitat[], number]> {
+    return this.habitats.findAndCount({
+      relations: { amenities: true },
+      relationLoadStrategy: 'query',
+      where: status ? { status } : {},
       order: { listedAt: 'DESC' },
       skip,
       take,
@@ -25,15 +30,21 @@ export class HabitatsRepository {
     return this.habitats.findOne({ where: { id } });
   }
 
-  async findRecent(since: Date): Promise<Habitat[]> {
-    return this.habitats
-      .createQueryBuilder('h')
-      .where('h.listed_at >= :since', { since })
-      .orderBy('h.listed_at', 'DESC')
-      .getMany();
+  async findByIdWithAmenities(id: string): Promise<Habitat | null> {
+    return this.habitats.findOne({
+      relations: { amenities: true },
+      relationLoadStrategy: 'query',
+      where: { id },
+    });
   }
 
-  async findAmenitiesForHabitat(habitatId: string): Promise<Amenity[]> {
-    return this.amenities.find({ where: { habitatId } });
+  async findRecent(since: Date, take: number): Promise<Habitat[]> {
+    return this.habitats.find({
+      relations: { amenities: true },
+      relationLoadStrategy: 'query',
+      where: { listedAt: MoreThanOrEqual(since) },
+      order: { listedAt: 'DESC' },
+      take,
+    });
   }
 }

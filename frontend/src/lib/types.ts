@@ -4,7 +4,7 @@ export interface HabitatResponse {
   price: number;
   currency: string;
   address: string;
-  area: number;
+  volumeM3: number;
   status: string;
   description: string;
   bedrooms: number | null;
@@ -18,4 +18,35 @@ export interface HabitatResponse {
   co2ScrubberState: string | null;
   listedAt: string;
   amenities: string[];
+}
+
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface Paginated<T> {
+  data: T[];
+  meta: PaginationMeta;
+}
+
+export type SafetyStatus = 'safe' | 'caution' | 'critical';
+
+export interface SafetyCheckItem {
+  metric: string;
+  label: string;
+  value: number | string | null;
+  unit: string | null;
+  safeRange: string;
+  status: SafetyStatus;
+  detail: string;
+}
+
+export interface SafetyCheck {
+  habitatId: string;
+  verdict: SafetyStatus;
+  score: number;
+  checks: SafetyCheckItem[];
 }

@@ -2,23 +2,44 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { HabitatsService, EnrichedHabitat } from './habitats.service';
 import { ListHabitatsQueryDto } from './dto/list-habitats.query.dto';
 import { HabitatResponseDto } from './dto/habitat-response.dto';
+import { PaginatedResponseDto } from './dto/paginated-response.dto';
+import { SafetyCheck } from './habitat-safety';
+import { pressurisedVolumeM3 } from './habitat-metrics';
 
 @Controller('habitats')
 export class HabitatsController {
   constructor(private readonly service: HabitatsService) {}
 
   @Get()
-  async list(@Query() query: ListHabitatsQueryDto): Promise<HabitatResponseDto[]> {
-    const rows = await this.service.list(query.page, query.limit);
-    return rows.map((row) => this.toResponse(row));
+  async list(
+    @Query() query: ListHabitatsQueryDto,
+  ): Promise<PaginatedResponseDto<HabitatResponseDto>> {
+    const { habitats, total } = await this.service.list(
+      query.page,
+      query.limit,
+      query.status,
+    );
+
+    return {
+      data: habitats.map((row) => this.toResponse(row)),
+      meta: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: Math.ceil(total / query.limit),
+      },
+    };
   }
 
   @Get('recent')
   async recent(): Promise<HabitatResponseDto[]> {
     const rows = await this.service.listRecent();
-    return rows.map((row) =>
-      this.toResponse({ ...row, amenityNames: [] }),
-    );
+    return rows.map((row) => this.toResponse(row));
+  }
+
+  @Get(':id/safety-check')
+  async safetyCheck(@Param('id') id: string): Promise<SafetyCheck> {
+    return this.service.getSafetyCheck(id);
   }
 
   @Get(':id')
@@ -31,10 +52,10 @@ export class HabitatsController {
     return {
       id: row.id,
       title: row.title,
-      price: Number(row.priceEgp),
-      currency: 'EGP',
+      price: Number(row.price),
+      currency: row.currency,
       address: row.addressLine,
-      area: Number(row.areaM2),
+      volumeM3: pressurisedVolumeM3(row),
       status: row.status,
       description: row.description,
       bedrooms: row.bedrooms,

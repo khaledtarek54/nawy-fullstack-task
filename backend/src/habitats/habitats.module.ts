@@ -4,10 +4,9 @@ import { HabitatsController } from './habitats.controller';
 import { HabitatsService } from './habitats.service';
 import { HabitatsRepository } from './habitats.repository';
 import { Habitat } from './entities/habitat.entity';
-import { Amenity } from './entities/amenity.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Habitat, Amenity])],
+  imports: [TypeOrmModule.forFeature([Habitat])],
   controllers: [HabitatsController],
   providers: [HabitatsService, HabitatsRepository],
   exports: [HabitatsService],

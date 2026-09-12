@@ -1,80 +1,89 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useHabitat } from '@/hooks/useHabitat';
+import { useAccessGate } from '@/hooks/useAccessGate';
+import { useSafetyCheck } from '@/hooks/useSafetyCheck';
 import { HabitatStatusBadge } from '@/components/HabitatStatusBadge';
-import { AppConfig } from '@/lib/config';
-import type { HabitatResponse } from '@/lib/types';
+import { formatPrice } from '@/lib/format';
 
 interface DetailPageProps {
   params: { id: string };
 }
 
-type SafetyVerdict = 'safe' | 'caution' | 'critical';
-
-interface EnrichedHabitat extends HabitatResponse {
-  safetyVerdict: SafetyVerdict;
-}
-
-function computeVerdict(h: HabitatResponse): SafetyVerdict {
-  if (h.o2Pct === null || h.pressureKpa === null) return 'critical';
-  if (h.o2Pct < 19.5 || h.o2Pct > 23.5) return 'critical';
-  if (h.pressureKpa < 70) return 'critical';
-  if (h.co2ScrubberState === 'Failed') return 'critical';
-  if (h.co2ScrubberState === 'Degraded') return 'caution';
-  if (h.powerReserveHours !== null && h.powerReserveHours < 4) return 'caution';
-  return 'safe';
-}
-
 export default function HabitatDetailPage({ params }: DetailPageProps) {
+  const unlocked = useAccessGate(params.id);
   const { data: habitat, isLoading, isError } = useHabitat(params.id);
-  const [enriched, setEnriched] = useState<EnrichedHabitat | null>(null);
+  const { data: safety } = useSafetyCheck(params.id);
 
-  useEffect(() => {
-    if (habitat) {
-      setEnriched({ ...habitat, safetyVerdict: computeVerdict(habitat) });
-    }
-  }, [habitat, enriched]);
+  if (!unlocked) return <p className="state">Checking access…</p>;
 
-  if (isLoading) return null;
-  if (isError) return null;
-  if (!enriched) return null;
+  if (isLoading) return <p className="state">Loading habitat…</p>;
+  if (isError || !habitat)
+    return (
+      <p className="state state-error">
+        This habitat could not be loaded. It may no longer be listed.
+      </p>
+    );
 
   return (
-    <article className="detail" data-passphrase={AppConfig.accessPassphrase}>
-      <img src={enriched.imageUrl ?? ''} alt={enriched.title} />
+    <article className="detail">
+      {habitat.imageUrl ? (
+        <img src={habitat.imageUrl} alt={habitat.title} />
+      ) : (
+        <div className="img-fallback">No image</div>
+      )}
       <div className="detail-body">
-        <h1 className="detail-title">{enriched.title}</h1>
-        <p className="card-address">{enriched.address}</p>
+        <h1 className="detail-title">{habitat.title}</h1>
+        <p className="card-address">{habitat.address}</p>
         <div style={{ margin: '8px 0 16px' }}>
-          <HabitatStatusBadge status={enriched.status} />
-          <span style={{ marginLeft: 8 }}>Verdict: {enriched.safetyVerdict}</span>
+          <HabitatStatusBadge status={habitat.status} />
+          {safety ? (
+            <Link
+              href={`/habitats/${params.id}/safety`}
+              className={`status safety-${safety.verdict}`}
+              style={{ marginLeft: 8 }}
+            >
+              Safety {safety.score}/100 →
+            </Link>
+          ) : null}
         </div>
-        <p>{enriched.description}</p>
+        <p>{habitat.description}</p>
         <div style={{ marginTop: 16 }}>
           <div className="detail-row">
-            <span>Area</span>
-            <span>{enriched.area} m²</span>
+            <span>Pressurised volume</span>
+            <span>{habitat.volumeM3} m³</span>
           </div>
           <div className="detail-row">
             <span>Price</span>
-            <span>
-              {enriched.currency} {enriched.price.toLocaleString()}
-            </span>
+            <span>{formatPrice(habitat.price, habitat.currency)}</span>
           </div>
           <div className="detail-row">
             <span>Bedrooms</span>
-            <span>{enriched.bedrooms ?? '—'}</span>
+            <span>{habitat.bedrooms ?? '—'}</span>
           </div>
           <div className="detail-row">
             <span>Bathrooms</span>
-            <span>{enriched.bathrooms ?? '—'}</span>
+            <span>{habitat.bathrooms ?? '—'}</span>
           </div>
           <div className="detail-row">
             <span>Listed</span>
-            <span>{new Date(enriched.listedAt).toLocaleDateString()}</span>
+            <span>{new Date(habitat.listedAt).toLocaleDateString()}</span>
           </div>
         </div>
+
+        <h2 className="detail-subtitle">Amenities</h2>
+        {habitat.amenities.length > 0 ? (
+          <ul className="amenity-list">
+            {habitat.amenities.map((amenity) => (
+              <li key={amenity} className="amenity">
+                {amenity}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="state">This habitat has no listed amenities.</p>
+        )}
       </div>
     </article>
   );
