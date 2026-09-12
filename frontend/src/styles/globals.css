@@ -110,9 +110,31 @@ h1 {
   color: var(--green);
 }
 
-.status-other {
+.status-pending {
   background: rgba(245, 158, 11, 0.15);
   color: var(--orange);
+}
+
+.status-sold {
+  background: rgba(107, 114, 128, 0.15);
+  color: var(--muted);
+}
+
+.status-other {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--red);
+}
+
+.img-fallback {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .detail {
@@ -149,4 +171,13 @@ h1 {
 
 .detail-row:last-child {
   border: none;
+}
+
+.state {
+  padding: 24px 0;
+  color: var(--muted);
+}
+
+.state-error {
+  color: var(--orange);
 }

@@ -10,8 +10,13 @@ export default function HomePage() {
 
   const { data, isLoading, isError } = useHabitats(page);
 
-  if (isLoading) return null;
-  if (isError) return null;
+  if (isLoading) return <p className="state">Loading habitats…</p>;
+  if (isError)
+    return (
+      <p className="state state-error">
+        Could not reach Mission Control. Check the service and reload.
+      </p>
+    );
 
   return (
     <>
@@ -20,6 +25,10 @@ export default function HomePage() {
         <button onClick={() => setStatusFilter('all')}>All</button>
         <button onClick={() => setStatusFilter('available')}>Available</button>
       </div>
+      {data && data.meta.total === 0 ? (
+        <p className="state">No habitats are listed yet.</p>
+      ) : null}
+
       <div className="grid">
         {data?.data.map((habitat) => (
           <HabitatCard key={habitat.id} habitat={habitat} />

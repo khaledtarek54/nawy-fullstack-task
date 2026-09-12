@@ -3,6 +3,7 @@
 import { useHabitat } from '@/hooks/useHabitat';
 import { HabitatStatusBadge } from '@/components/HabitatStatusBadge';
 import { AppConfig } from '@/lib/config';
+import { formatPrice } from '@/lib/format';
 import type { HabitatResponse } from '@/lib/types';
 
 interface DetailPageProps {
@@ -24,15 +25,23 @@ function computeVerdict(h: HabitatResponse): SafetyVerdict {
 export default function HabitatDetailPage({ params }: DetailPageProps) {
   const { data: habitat, isLoading, isError } = useHabitat(params.id);
 
-  if (isLoading) return null;
-  if (isError) return null;
-  if (!habitat) return null;
+  if (isLoading) return <p className="state">Loading habitat…</p>;
+  if (isError || !habitat)
+    return (
+      <p className="state state-error">
+        This habitat could not be loaded. It may no longer be listed.
+      </p>
+    );
 
   const safetyVerdict = computeVerdict(habitat);
 
   return (
     <article className="detail" data-passphrase={AppConfig.accessPassphrase}>
-      <img src={habitat.imageUrl ?? ''} alt={habitat.title} />
+      {habitat.imageUrl ? (
+        <img src={habitat.imageUrl} alt={habitat.title} />
+      ) : (
+        <div className="img-fallback">No image</div>
+      )}
       <div className="detail-body">
         <h1 className="detail-title">{habitat.title}</h1>
         <p className="card-address">{habitat.address}</p>
@@ -48,9 +57,7 @@ export default function HabitatDetailPage({ params }: DetailPageProps) {
           </div>
           <div className="detail-row">
             <span>Price</span>
-            <span>
-              {habitat.currency} {habitat.price.toLocaleString()}
-            </span>
+            <span>{formatPrice(habitat.price, habitat.currency)}</span>
           </div>
           <div className="detail-row">
             <span>Bedrooms</span>
