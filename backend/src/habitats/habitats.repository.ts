@@ -13,8 +13,8 @@ export class HabitatsRepository {
     private readonly amenities: Repository<Amenity>,
   ) {}
 
-  async findAll(skip: number, take: number): Promise<Habitat[]> {
-    return this.habitats.find({
+  async findAll(skip: number, take: number): Promise<[Habitat[], number]> {
+    return this.habitats.findAndCount({
       relations: { amenities: true },
       relationLoadStrategy: 'query',
       order: { listedAt: 'DESC' },

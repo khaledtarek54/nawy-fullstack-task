@@ -27,14 +27,23 @@ export default function HomePage() {
         <button onClick={() => setStatusFilter('available')}>Available</button>
       </div>
       <div className="grid">
-        {data?.map((habitat) => (
+        {data?.data.map((habitat) => (
           <HabitatCard key={habitat.id} habitat={habitat} />
         ))}
       </div>
       <div style={{ marginTop: 16 }}>
-        <button onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</button>
-        <span style={{ margin: '0 12px' }}>Page {page}</span>
-        <button onClick={() => setPage((p) => p + 1)}>Next</button>
+        <button disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+          Prev
+        </button>
+        <span style={{ margin: '0 12px' }}>
+          Page {page} of {data?.meta.totalPages ?? 1}
+        </span>
+        <button
+          disabled={!data || page >= data.meta.totalPages}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Next
+        </button>
       </div>
     </>
   );

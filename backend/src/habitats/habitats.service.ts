@@ -11,11 +11,14 @@ const RECENT_LIMIT = 20;
 export class HabitatsService {
   constructor(private readonly repo: HabitatsRepository) {}
 
-  async list(page: number, limit: number): Promise<EnrichedHabitat[]> {
+  async list(
+    page: number,
+    limit: number,
+  ): Promise<{ habitats: EnrichedHabitat[]; total: number }> {
     const skip = (page - 1) * limit;
-    const habitats = await this.repo.findAll(skip, limit);
+    const [habitats, total] = await this.repo.findAll(skip, limit);
 
-    return this.toEnriched(habitats);
+    return { habitats: this.toEnriched(habitats), total };
   }
 
   async getById(id: string): Promise<EnrichedHabitat> {

@@ -1,4 +1,4 @@
-import type { HabitatResponse } from './types';
+import type { HabitatResponse, Paginated } from './types';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000';
 
@@ -12,6 +12,6 @@ async function request<T>(path: string): Promise<T> {
 
 export const api = {
   listHabitats: (page = 1, limit = 10) =>
-    request<HabitatResponse[]>(`/habitats?page=${page}&limit=${limit}`),
+    request<Paginated<HabitatResponse>>(`/habitats?page=${page}&limit=${limit}`),
   getHabitat: (id: string) => request<HabitatResponse>(`/habitats/${id}`),
 };

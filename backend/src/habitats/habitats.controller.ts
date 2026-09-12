@@ -2,15 +2,27 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { HabitatsService, EnrichedHabitat } from './habitats.service';
 import { ListHabitatsQueryDto } from './dto/list-habitats.query.dto';
 import { HabitatResponseDto } from './dto/habitat-response.dto';
+import { PaginatedResponseDto } from './dto/paginated-response.dto';
 
 @Controller('habitats')
 export class HabitatsController {
   constructor(private readonly service: HabitatsService) {}
 
   @Get()
-  async list(@Query() query: ListHabitatsQueryDto): Promise<HabitatResponseDto[]> {
-    const rows = await this.service.list(query.page, query.limit);
-    return rows.map((row) => this.toResponse(row));
+  async list(
+    @Query() query: ListHabitatsQueryDto,
+  ): Promise<PaginatedResponseDto<HabitatResponseDto>> {
+    const { habitats, total } = await this.service.list(query.page, query.limit);
+
+    return {
+      data: habitats.map((row) => this.toResponse(row)),
+      meta: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: Math.ceil(total / query.limit),
+      },
+    };
   }
 
   @Get('recent')
