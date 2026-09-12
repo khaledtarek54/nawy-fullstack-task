@@ -21,7 +21,7 @@ export function HabitatCard({ habitat }: HabitatCardProps) {
         <div className="card-meta">
           <span>{habitat.bedrooms ?? '—'} bd</span>
           <span>{habitat.bathrooms ?? '—'} ba</span>
-          <span>{habitat.area} m²</span>
+          <span>{habitat.volumeM3} m³</span>
         </div>
         <div className="card-price">{formatPrice(habitat.price, habitat.currency)}</div>
         <HabitatStatusBadge status={habitat.status} />

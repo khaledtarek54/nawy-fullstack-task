@@ -1,12 +1,13 @@
 export interface SeedHabitat {
   id: string;
   title: string;
-  price_egp: number;
+  price: number;
   currency: string;
   address_line: string;
   bedrooms: number | null;
   bathrooms: number | null;
   area_m2: number;
+  ceiling_height_m: number;
   image_url: string | null;
   description: string;
   status: string;
@@ -24,12 +25,13 @@ const NAMED_HABITATS: SeedHabitat[] = [
   {
     id: 'hab_001',
     title: 'Hellas Plain Pod 1',
-    price_egp: 12_500_000,
-    currency: 'EGP',
-    address_line: 'Building 42, 5th Settlement, New Cairo',
+    price: 12_500_000,
+    currency: 'MCR',
+    address_line: 'Module 42, Hellas Plain, Sector 1',
     bedrooms: 2,
     bathrooms: 1,
     area_m2: 78,
+    ceiling_height_m: 2.7,
     image_url: null,
     description:
       'Compact two-bed pod with thermal regulation. Suitable for a couple or single resident with a workshop module.',
@@ -46,12 +48,13 @@ const NAMED_HABITATS: SeedHabitat[] = [
   {
     id: 'hab_002',
     title: 'Olympus Foothills Suite',
-    price_egp: 28_900_000,
-    currency: 'EGP',
-    address_line: 'Building 14, Smart Village, Cairo',
+    price: 28_900_000,
+    currency: 'MCR',
+    address_line: 'Module 14, Olympus Foothills, Sector 2',
     bedrooms: 3,
     bathrooms: 2,
     area_m2: 142,
+    ceiling_height_m: 3.0,
     image_url: 'https://picsum.photos/seed/h2/600/400',
     description:
       'Three-bed suite with panoramic dust-viewing port and recreational lounge. Premium HVAC.',
@@ -68,12 +71,13 @@ const NAMED_HABITATS: SeedHabitat[] = [
   {
     id: 'hab_003',
     title: 'Valles Marineris Edge Studio',
-    price_egp: 8_100_000,
-    currency: 'EGP',
-    address_line: 'Building 7, Madinaty, Cairo',
+    price: 8_100_000,
+    currency: 'MCR',
+    address_line: 'Module 7, Valles Marineris Edge, Sector 3',
     bedrooms: 1,
     bathrooms: 1,
     area_m2: 45,
+    ceiling_height_m: 2.5,
     image_url: 'https://picsum.photos/seed/h3/600/400',
     description:
       'Single-pod studio. Compact, efficient, and fitted with a reinforced airlock for cliffside conditions.',
@@ -90,12 +94,13 @@ const NAMED_HABITATS: SeedHabitat[] = [
   {
     id: 'hab_004',
     title: 'Tharsis Plateau Family Habitat',
-    price_egp: -1,
-    currency: 'EGP',
-    address_line: 'Building 88, El Sheikh Zayed, Giza',
+    price: -1,
+    currency: 'MCR',
+    address_line: 'Module 88, Tharsis Plateau, Sector 4',
     bedrooms: 4,
     bathrooms: 3,
     area_m2: 210,
+    ceiling_height_m: 3.2,
     image_url: null,
     description:
       'Four-bedroom family habitat with attached greenhouse module. Ideal for long-stay missions.',
@@ -112,12 +117,13 @@ const NAMED_HABITATS: SeedHabitat[] = [
   {
     id: 'hab_005',
     title: 'Phoenix Crater Compact',
-    price_egp: 6_400_000,
-    currency: 'EGP',
-    address_line: 'Building 3, Heliopolis, Cairo',
+    price: 6_400_000,
+    currency: 'MCR',
+    address_line: 'Module 3, Phoenix Crater, Sector 5',
     bedrooms: 1,
     bathrooms: 1,
     area_m2: 38,
+    ceiling_height_m: 2.4,
     image_url: null,
     description:
       'Entry-level habitat — bring your own decor. Crater-rim location with mineral views.',
@@ -134,12 +140,13 @@ const NAMED_HABITATS: SeedHabitat[] = [
   {
     id: 'hab_006',
     title: 'Gale Crater Research Lodge',
-    price_egp: 15_750_000,
-    currency: 'EGP',
-    address_line: 'Building 21, Maadi, Cairo',
+    price: 15_750_000,
+    currency: 'MCR',
+    address_line: 'Module 21, Gale Crater, Sector 6',
     bedrooms: 2,
     bathrooms: 2,
     area_m2: 96,
+    ceiling_height_m: 2.8,
     image_url: 'https://picsum.photos/seed/h6/600/400',
     description:
       'Research-grade habitat with attached laboratory bay. Wired for ESA/NASA telemetry feeds.',
@@ -156,12 +163,13 @@ const NAMED_HABITATS: SeedHabitat[] = [
   {
     id: 'hab_007',
     title: 'Olympus Ridge — Sector 4',
-    price_egp: 41_200_000,
-    currency: 'EGP',
-    address_line: 'Building 99, Marina, North Coast',
+    price: 41_200_000,
+    currency: 'MCR',
+    address_line: 'Module 99, Arcadia Ridge, Sector 7',
     bedrooms: 3,
     bathrooms: 2,
     area_m2: 168,
+    ceiling_height_m: 3.4,
     image_url: 'https://picsum.photos/seed/h7/600/400',
     description:
       'Pressurised 3-pod habitat with thermal regulation and full radiation shielding. ' +
@@ -181,12 +189,13 @@ const NAMED_HABITATS: SeedHabitat[] = [
   {
     id: 'hab_008',
     title: 'Schiaparelli Basin Pod',
-    price_egp: 9_800_000,
-    currency: 'EGP',
-    address_line: 'Building 11, 6th of October, Giza',
+    price: 9_800_000,
+    currency: 'MCR',
+    address_line: 'Module 11, Arcadia Ridge, Sector 7',
     bedrooms: 1,
     bathrooms: 1,
     area_m2: 52,
+    ceiling_height_m: 2.6,
     image_url: 'https://picsum.photos/seed/h8/600/400',
     description: 'Single-pod basin habitat with reinforced floor for low-lying terrain.',
     status: 'sold',
@@ -206,16 +215,6 @@ const SECTORS = [
   'Phoenix Crater', 'Gale Crater', 'Schiaparelli Basin', 'Arcadia Ridge',
   'Elysium Mons', 'Utopia Lowlands', 'Argyre Basin', 'Chryse Plain',
 ];
-const ADDRESSES = [
-  'Building 12, 5th Settlement, New Cairo',
-  'Building 7, Smart Village, Cairo',
-  'Building 33, Madinaty, Cairo',
-  'Building 21, El Sheikh Zayed, Giza',
-  'Building 9, Heliopolis, Cairo',
-  'Building 18, Maadi, Cairo',
-  'Building 4, Marina, North Coast',
-  'Building 27, 6th of October, Giza',
-];
 const AMENITY_BANK = [
   'Workshop module', 'Hydroponics rack', 'Recreational lounge',
   'Dust-viewing port', 'Reinforced airlock', 'Greenhouse module',
@@ -230,7 +229,7 @@ function generateFillerHabitats(count: number, startIndex: number): SeedHabitat[
   for (let i = 0; i < count; i++) {
     const idx = startIndex + i;
     const sector = SECTORS[idx % SECTORS.length];
-    const address = ADDRESSES[idx % ADDRESSES.length];
+    const address = `Module ${idx}, ${sector}, Sector ${(idx % 9) + 1}`;
     const status = STATUSES[idx % STATUSES.length];
     const co2 = SCRUBBER_STATES[idx % SCRUBBER_STATES.length];
     const bedrooms = (idx % 4) + 1;
@@ -252,12 +251,13 @@ function generateFillerHabitats(count: number, startIndex: number): SeedHabitat[
     out.push({
       id: `hab_${String(idx).padStart(3, '0')}`,
       title: `${sector} Pod ${idx}`,
-      price_egp: price,
-      currency: 'EGP',
+      price: price,
+      currency: 'MCR',
       address_line: address,
       bedrooms,
       bathrooms,
       area_m2: area,
+      ceiling_height_m: 2.4 + ((idx * 3) % 11) / 10,
       image_url: idx % 5 === 0 ? null : `https://picsum.photos/seed/h${idx}/600/400`,
       description: `Standard ${bedrooms}-bedroom habitat in ${sector}. Pressurised, with thermal regulation.`,
       status,

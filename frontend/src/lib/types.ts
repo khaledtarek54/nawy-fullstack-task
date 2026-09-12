@@ -4,7 +4,7 @@ export interface HabitatResponse {
   price: number;
   currency: string;
   address: string;
-  area: number;
+  volumeM3: number;
   status: string;
   description: string;
   bedrooms: number | null;

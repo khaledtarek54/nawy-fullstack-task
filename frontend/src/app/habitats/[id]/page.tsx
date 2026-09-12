@@ -66,8 +66,8 @@ export default function HabitatDetailPage({ params }: DetailPageProps) {
         <p>{habitat.description}</p>
         <div style={{ marginTop: 16 }}>
           <div className="detail-row">
-            <span>Area</span>
-            <span>{habitat.area} m²</span>
+            <span>Pressurised volume</span>
+            <span>{habitat.volumeM3} m³</span>
           </div>
           <div className="detail-row">
             <span>Price</span>

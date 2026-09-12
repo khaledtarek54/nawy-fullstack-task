@@ -45,10 +45,10 @@ export class HabitatsController {
     return {
       id: row.id,
       title: row.title,
-      price: Number(row.priceEgp),
-      currency: 'EGP',
+      price: Number(row.price),
+      currency: row.currency,
       address: row.addressLine,
-      area: Number(row.areaM2),
+      volumeM3: Math.round(Number(row.areaM2) * Number(row.ceilingHeightM) * 10) / 10,
       status: row.status,
       description: row.description,
       bedrooms: row.bedrooms,

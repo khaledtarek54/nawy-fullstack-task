@@ -20,14 +20,15 @@ async function main() {
       for (const seed of HABITATS_SEED) {
         await manager.query(
           `INSERT INTO habitats
-            (id, title, price_egp, currency, address_line, bedrooms, bathrooms,
-             area_m2, image_url, description, status,
+            (id, title, price, currency, address_line, bedrooms, bathrooms,
+             area_m2, ceiling_height_m, image_url, description, status,
              o2_pct, pressure_kpa, temperature_c, radiation_shielding_pct,
              power_reserve_hours, co2_scrubber_state, listed_at)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
            ON CONFLICT (id) DO UPDATE SET
              title                   = EXCLUDED.title,
-             price_egp               = EXCLUDED.price_egp,
+             price                   = EXCLUDED.price,
+             ceiling_height_m        = EXCLUDED.ceiling_height_m,
              currency                = EXCLUDED.currency,
              address_line            = EXCLUDED.address_line,
              bedrooms                = EXCLUDED.bedrooms,
@@ -44,8 +45,8 @@ async function main() {
              co2_scrubber_state      = EXCLUDED.co2_scrubber_state,
              listed_at               = EXCLUDED.listed_at`,
           [
-            seed.id, seed.title, seed.price_egp, seed.currency, seed.address_line,
-            seed.bedrooms, seed.bathrooms, seed.area_m2, seed.image_url,
+            seed.id, seed.title, seed.price, seed.currency, seed.address_line,
+            seed.bedrooms, seed.bathrooms, seed.area_m2, seed.ceiling_height_m, seed.image_url,
             seed.description, normalizeHabitatStatus(seed.status),
             seed.o2_pct, seed.pressure_kpa, seed.temperature_c,
             seed.radiation_shielding_pct, seed.power_reserve_hours,

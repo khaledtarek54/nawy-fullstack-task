@@ -10,8 +10,8 @@ export class Habitat {
   @Column({ type: 'text' })
   title!: string;
 
-  @Column({ type: 'numeric', name: 'price_egp' })
-  priceEgp!: string;
+  @Column({ type: 'numeric' })
+  price!: string;
 
   @Column({ type: 'text' })
   currency!: string;
@@ -27,6 +27,9 @@ export class Habitat {
 
   @Column({ type: 'numeric', name: 'area_m2' })
   areaM2!: string;
+
+  @Column({ type: 'numeric', name: 'ceiling_height_m' })
+  ceilingHeightM!: string;
 
   @Column({ type: 'text', nullable: true, name: 'image_url' })
   imageUrl!: string | null;
