@@ -3,15 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThanOrEqual, Repository } from 'typeorm';
 import { Habitat } from './entities/habitat.entity';
 import { HabitatStatus } from './habitat-status';
-import { Amenity } from './entities/amenity.entity';
 
 @Injectable()
 export class HabitatsRepository {
   constructor(
     @InjectRepository(Habitat)
     private readonly habitats: Repository<Habitat>,
-    @InjectRepository(Amenity)
-    private readonly amenities: Repository<Amenity>,
   ) {}
 
   async findAll(
@@ -33,6 +30,14 @@ export class HabitatsRepository {
     return this.habitats.findOne({ where: { id } });
   }
 
+  async findByIdWithAmenities(id: string): Promise<Habitat | null> {
+    return this.habitats.findOne({
+      relations: { amenities: true },
+      relationLoadStrategy: 'query',
+      where: { id },
+    });
+  }
+
   async findRecent(since: Date, take: number): Promise<Habitat[]> {
     return this.habitats.find({
       relations: { amenities: true },
@@ -41,9 +46,5 @@ export class HabitatsRepository {
       order: { listedAt: 'DESC' },
       take,
     });
-  }
-
-  async findAmenitiesForHabitat(habitatId: string): Promise<Amenity[]> {
-    return this.amenities.find({ where: { habitatId } });
   }
 }

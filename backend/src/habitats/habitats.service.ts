@@ -21,39 +21,37 @@ export class HabitatsService {
     const skip = (page - 1) * limit;
     const [habitats, total] = await this.repo.findAll(skip, limit, status);
 
-    return { habitats: this.toEnriched(habitats), total };
+    return { habitats: habitats.map((h) => this.toEnriched(h)), total };
   }
 
   async getById(id: string): Promise<EnrichedHabitat> {
-    const habitat = await this.repo.findById(id);
-    if (!habitat) {
-      throw new NotFoundException(`Habitat ${id} not found`);
-    }
-    const amenities = await this.repo.findAmenitiesForHabitat(id);
-    return { ...habitat, amenityNames: amenities.map((a) => a.name) };
+    const habitat = await this.repo.findByIdWithAmenities(id);
+
+    return this.toEnriched(this.ensureFound(id, habitat));
   }
 
   async listRecent(): Promise<EnrichedHabitat[]> {
     const since = new Date(Date.now() - RECENT_WINDOW_DAYS * 24 * 60 * 60 * 1000);
     const habitats = await this.repo.findRecent(since, RECENT_LIMIT);
 
-    return this.toEnriched(habitats);
+    return habitats.map((h) => this.toEnriched(h));
   }
 
   async getSafetyCheck(id: string): Promise<SafetyCheck> {
     const habitat = await this.repo.findById(id);
 
+    return evaluateSafety(this.ensureFound(id, habitat));
+  }
+
+  private ensureFound(id: string, habitat: Habitat | null): Habitat {
     if (!habitat) {
       throw new NotFoundException(`Habitat ${id} not found`);
     }
 
-    return evaluateSafety(habitat);
+    return habitat;
   }
 
-  private toEnriched(habitats: Habitat[]): EnrichedHabitat[] {
-    return habitats.map((h) => ({
-      ...h,
-      amenityNames: h.amenities.map((a) => a.name),
-    }));
+  private toEnriched(habitat: Habitat): EnrichedHabitat {
+    return { ...habitat, amenityNames: habitat.amenities.map((a) => a.name) };
   }
 }

@@ -4,6 +4,7 @@ import { ListHabitatsQueryDto } from './dto/list-habitats.query.dto';
 import { HabitatResponseDto } from './dto/habitat-response.dto';
 import { PaginatedResponseDto } from './dto/paginated-response.dto';
 import { SafetyCheck } from './habitat-safety';
+import { pressurisedVolumeM3 } from './habitat-metrics';
 
 @Controller('habitats')
 export class HabitatsController {
@@ -54,7 +55,7 @@ export class HabitatsController {
       price: Number(row.price),
       currency: row.currency,
       address: row.addressLine,
-      volumeM3: Math.round(Number(row.areaM2) * Number(row.ceilingHeightM) * 10) / 10,
+      volumeM3: pressurisedVolumeM3(row),
       status: row.status,
       description: row.description,
       bedrooms: row.bedrooms,

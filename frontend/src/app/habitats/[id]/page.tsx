@@ -6,7 +6,6 @@ import { useAccessGate } from '@/hooks/useAccessGate';
 import { useSafetyCheck } from '@/hooks/useSafetyCheck';
 import { HabitatStatusBadge } from '@/components/HabitatStatusBadge';
 import { formatPrice } from '@/lib/format';
-import type { HabitatResponse } from '@/lib/types';
 
 interface DetailPageProps {
   params: { id: string };
@@ -40,7 +39,11 @@ export default function HabitatDetailPage({ params }: DetailPageProps) {
         <div style={{ margin: '8px 0 16px' }}>
           <HabitatStatusBadge status={habitat.status} />
           {safety ? (
-            <Link href={`/habitats/${params.id}/safety`} className={`status safety-${safety.verdict}`} style={{ marginLeft: 8 }}>
+            <Link
+              href={`/habitats/${params.id}/safety`}
+              className={`status safety-${safety.verdict}`}
+              style={{ marginLeft: 8 }}
+            >
               Safety {safety.score}/100 →
             </Link>
           ) : null}
