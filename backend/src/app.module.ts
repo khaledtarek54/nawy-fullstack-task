@@ -4,6 +4,7 @@ import { Habitat } from './habitats/entities/habitat.entity';
 import { Amenity } from './habitats/entities/amenity.entity';
 import { HabitatsModule } from './habitats/habitats.module';
 import { AccessModule } from './access/access.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AccessModule } from './access/access.module';
     }),
     HabitatsModule,
     AccessModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
